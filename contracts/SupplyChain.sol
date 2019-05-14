@@ -50,7 +50,7 @@ contract SupplyChain {
   event Shipped(uint _sku);
   event Received(uint _sku);
 /* Create a modifer that checks if the msg.sender is the owner of the contract */
-  modifier onlyOwner{ require(msg.sender == owner); _;}
+  modifier isOwner{ require(msg.sender == owner); _;}
 
   modifier verifyCaller (address _address) { require (msg.sender == _address); _;}
 
