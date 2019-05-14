@@ -9,7 +9,7 @@ pragma solidity ^0.5.0;
 contract SupplyChain {
 
   /* set owner */
-  address owner;
+  address public owner;
 
   /* Add a variable called skuCount to track the most recent sku # */
   uint skuCount;
@@ -60,13 +60,13 @@ contract SupplyChain {
     _;
     uint _price = items[_sku].price;
     uint amountToRefund = msg.value - _price;
-    items[_sku].buyer.transfer(amountToRefund);
+    address(uint160(items[_sku].buyer)).transfer(amountToRefund);
   }
 
   /* For each of the following modifiers, use what you learned about modifiers
    to give them functionality. For example, the forSale modifier should require
    that the item with the given sku has the state ForSale. */
-  modifier forSale(uint _sku) { require (items[_sku].State == State.ForSale); _;}
+  modifier forSale(uint _sku) {require (items[_sku].State == State.ForSale); _;}
   modifier sold (uint _sku) { require (items[_sku].State == State.Sold); _;}
   modifier shipped (uint _sku) { require (items[_sku].State == State.Shipped); _;}
   modifier received (uint _sku) { require (items[_sku].State == State.Received); _;}
@@ -102,14 +102,14 @@ contract SupplyChain {
 
   /* Add 2 modifiers to check if the item is sold already, and that the person calling this function
   is the seller. Change the state of the item to shipped. Remember to call the event associated with this function!*/
-  function shipItem(uint sku) public sold(sku) onlyOwner{
+  function shipItem(uint sku) public sold(sku) verifyCaller(items[sku].seller){
     items[sku].State = State.Shipped;
     emit Shipped(sku);
   }
 
   /* Add 2 modifiers to check if the item is shipped already, and that the person calling this function
   is the buyer. Change the state of the item to received. Remember to call the event associated with this function!*/
-  function receiveItem(uint sku) public shipped(sku) onlyOwner{
+  function receiveItem(uint sku) public shipped(sku) verifyCaller(items[sku].buyer){
     items[sku].State = State.Received;
     emit Received(sku);
   }
