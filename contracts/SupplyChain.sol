@@ -39,7 +39,7 @@ contract SupplyChain {
     uint price;
     State state;
     address seller;
-    address buyer;
+    address payable buyer;
   }
 
 
@@ -60,7 +60,7 @@ contract SupplyChain {
     _;
     uint _price = items[_sku].price;
     uint amountToRefund = msg.value - _price;
-    address(uint160(items[_sku].buyer)).transfer(amountToRefund);
+    items[_sku].buyer.transfer(amountToRefund);
   }
 
   /* For each of the following modifiers, use what you learned about modifiers
