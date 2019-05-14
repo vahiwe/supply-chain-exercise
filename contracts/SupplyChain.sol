@@ -79,9 +79,9 @@ contract SupplyChain {
        and set your skuCount to 0. */
   }
 
-  function addItem(string memory _name, uint _price) public returns(bool){
+  function addItem(string name, uint _price) public returns(bool){
     emit ForSale(skuCount);
-    items[skuCount] = Item({name: _name, sku: skuCount, price: _price, state: uint(State.ForSale), seller: msg.sender, buyer: address(0)});
+    items[skuCount] = Item({name: name, sku: skuCount, price: _price, state: uint(State.ForSale), seller: msg.sender, buyer: address(0)});
     skuCount = skuCount + 1;
     return true;
   }
@@ -94,10 +94,9 @@ contract SupplyChain {
 
   function buyItem(uint sku) public payable forSale(sku) paidEnough(items[sku].price) checkValue(sku) {
     emit Sold(sku);
-    uint price = items[sku].price;
     items[sku].buyer = msg.sender;
     items[sku].state = uint(State.Sold);
-    address(uint160(items[sku].seller)).transfer(price);
+    address(uint160(items[sku].seller)).transfer(items[sku].price);
   }
 
   /* Add 2 modifiers to check if the item is sold already, and that the person calling this function
@@ -115,7 +114,7 @@ contract SupplyChain {
   }
 
   /* We have these functions completed so we can run tests, just ignore it :) */
-  function fetchItem(uint _sku) public view returns (string memory name, uint sku, uint price, uint state, address seller, address buyer) {
+  function fetchItem(uint _sku) public view returns (string name, uint sku, uint price, uint state, address seller, address buyer) {
     name = items[_sku].name;
     sku = items[_sku].sku;
     price = items[_sku].price;
