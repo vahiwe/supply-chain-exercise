@@ -66,10 +66,10 @@ contract SupplyChain {
   /* For each of the following modifiers, use what you learned about modifiers
    to give them functionality. For example, the forSale modifier should require
    that the item with the given sku has the state ForSale. */
-  modifier forSale(uint _sku) {require (items[_sku].State == State.ForSale); _;}
-  modifier sold (uint _sku) { require (items[_sku].State == State.Sold); _;}
-  modifier shipped (uint _sku) { require (items[_sku].State == State.Shipped); _;}
-  modifier received (uint _sku) { require (items[_sku].State == State.Received); _;}
+  modifier forSale(uint _sku) {require (items[_sku].state == State.ForSale); _;}
+  modifier sold (uint _sku) { require (items[_sku].state == State.Sold); _;}
+  modifier shipped (uint _sku) { require (items[_sku].state == State.Shipped); _;}
+  modifier received (uint _sku) { require (items[_sku].state == State.Received); _;}
 
 
   constructor() public {
@@ -94,23 +94,23 @@ contract SupplyChain {
 
   function buyItem(uint sku) public payable forSale(sku) paidEnough(items[sku].price) checkValue(sku) {
     uint price = items[sku].price;
-    items[sku].seller.transfer(price);
+    address(uint160(items[sku].seller)).transfer(price);
     items[sku].buyer = msg.sender;
-    items[sku].State = State.Sold;
+    items[sku].state = State.Sold;
     emit Sold(sku);
   }
 
   /* Add 2 modifiers to check if the item is sold already, and that the person calling this function
   is the seller. Change the state of the item to shipped. Remember to call the event associated with this function!*/
   function shipItem(uint sku) public sold(sku) verifyCaller(items[sku].seller){
-    items[sku].State = State.Shipped;
+    items[sku].state = State.Shipped;
     emit Shipped(sku);
   }
 
   /* Add 2 modifiers to check if the item is shipped already, and that the person calling this function
   is the buyer. Change the state of the item to received. Remember to call the event associated with this function!*/
   function receiveItem(uint sku) public shipped(sku) verifyCaller(items[sku].buyer){
-    items[sku].State = State.Received;
+    items[sku].state = State.Received;
     emit Received(sku);
   }
 
